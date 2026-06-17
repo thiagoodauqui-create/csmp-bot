@@ -77,6 +77,9 @@ client.on("interactionCreate", async interaction => {
         });
 
         try{
+            
+console.log("SERVER_ID:", process.env.SERVER_ID);
+
 
             await axios.post(
     `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start/`,
