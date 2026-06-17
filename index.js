@@ -22,6 +22,11 @@ const commands = [
         .setDefaultMemberPermissions(8),
 
     new SlashCommandBuilder()
+        .setName("desligar")
+        .setDescription("Desliga o servidor Minecraft")
+        .setDefaultMemberPermissions(8),
+
+    new SlashCommandBuilder()
         .setName("status")
         .setDescription("Mostra o status do servidor")
 ]
@@ -66,11 +71,11 @@ client.on("interactionCreate", async interaction => {
 
         try{
 
-            const carregando = new EmbedBuilder()
-            .setTitle("⚡ CSMP")
-            .setDescription("Enviando solicitação para iniciar o servidor...")
-            .setThumbnail(client.user.displayAvatarURL())
-            .setTimestamp();
+            const carregando = baseEmbed(
+    "⚡ CSMP",
+    "Enviando solicitação para iniciar o servidor...",
+    0xfee75c
+);
 
             await interaction.reply({
                 embeds:[carregando]
@@ -142,7 +147,19 @@ console.log("URL:",
             const embed = new EmbedBuilder()
             .setTitle("📊 Status do CSMP")
             .setDescription(
-                `Servidor: **${estado}**`
+                const statusEmoji = {
+    online: "🟢 Online",
+    offline: "🔴 Offline",
+    starting: "🟡 Iniciando",
+    stopping: "🟠 Desligando"
+};
+
+const embed = new EmbedBuilder()
+    .setTitle("📊 CSMP Status")
+    .setDescription(`Servidor: **${statusEmoji[estado] || estado}**`)
+    .setColor(0x2b2d31)
+    .setThumbnail(client.user.displayAvatarURL())
+    .setTimestamp();
             )
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp();
@@ -163,6 +180,52 @@ console.log("URL:",
 
     }
 
-});
+})
+;if (interaction.commandName === "desligar") {
+    try {
+        const embedCarregando = new EmbedBuilder()
+            .setTitle("🛑 CSMP")
+            .setDescription("Enviando solicitação para desligar o servidor...")
+            .setColor(0xed4245)
+            .setThumbnail(client.user.displayAvatarURL())
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embedCarregando] });
+
+        await axios.post(
+            `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/stop`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.EXAROTON_TOKEN}`
+                }
+            }
+        );
+
+        const embedSucesso = new EmbedBuilder()
+            .setTitle("🔴 Servidor desligando")
+            .setDescription("O servidor foi enviado para desligamento com sucesso.")
+            .setColor(0xff0000)
+            .addFields(
+                { name: "👤 Por", value: interaction.user.tag, inline: true },
+                { name: "⏱ Status", value: "Stopping...", inline: true }
+            )
+            .setThumbnail(client.user.displayAvatarURL())
+            .setTimestamp();
+
+        await interaction.followUp({ embeds: [embedSucesso] });
+
+    } catch (err) {
+        console.log(err.response?.data || err.message);
+
+        const erro = new EmbedBuilder()
+            .setTitle("❌ Erro ao desligar")
+            .setDescription("Não foi possível desligar o servidor.")
+            .setColor(0x2b2d31)
+            .setTimestamp();
+
+        await interaction.followUp({ embeds: [erro] });
+    }
+}
 
 client.login(process.env.DISCORD_TOKEN);
