@@ -75,7 +75,12 @@ client.on("interactionCreate", async interaction => {
             await interaction.reply({
                 embeds:[carregando]
             });
-
+            
+console.log("TOKEN:", !!process.env.EXAROTON_TOKEN);
+console.log("SERVER_ID:", process.env.SERVER_ID);
+console.log("URL:",
+`https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`
+);
             const resposta = await axios.post(
                 `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
                 {},
