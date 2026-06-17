@@ -5,7 +5,8 @@ const {
     GatewayIntentBits,
     REST,
     Routes,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    EmbedBuilder
 } = require("discord.js");
 
 const axios = require("axios");
@@ -14,10 +15,10 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds]
 });
 
-const commands = [
-    new SlashCommandBuilder()
-        .setName("ligar")
-        .setDescription("Liga o servidor Minecraft")
+new SlashCommandBuilder()
+    .setName("ligar")
+    .setDescription("Liga o servidor Minecraft")
+    .setDefaultMemberPermissions(8)
 ]
 .map(command => command.toJSON());
 
@@ -28,6 +29,13 @@ const rest = new REST({version:"10"})
     try {
 
         await rest.put(
+    Routes.applicationCommands(
+        process.env.CLIENT_ID
+    ),
+    { body: [] }
+);
+
+await rest.put(
     Routes.applicationGuildCommands(
         process.env.CLIENT_ID,
         process.env.GUILD_ID
@@ -52,38 +60,61 @@ client.on("interactionCreate", async interaction => {
 
     if(interaction.commandName==="ligar"){
 
-        await interaction.reply(
-            "Iniciando o servidor... aguarde..."
+    const carregando = new EmbedBuilder()
+    .setTitle("⚡ CSMP")
+    .setDescription("Iniciando o servidor...")
+    .setThumbnail(client.user.displayAvatarURL())
+    .setFooter({
+        text:"CSMP Bot"
+    })
+    .setTimestamp();
+
+    await interaction.reply({
+        embeds:[carregando]
+    });
+
+    try{
+
+        await axios.post(
+            `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
+            {},
+            {
+                headers:{
+                    Authorization:
+                    `Bearer ${process.env.EXAROTON_TOKEN}`
+                }
+            }
         );
 
-        try{
+        const sucesso = new EmbedBuilder()
+        .setTitle("✅ Servidor iniciado")
+        .setDescription(
+            "O CSMP está ligando.\n\nEntre em alguns segundos."
+        )
+        .setThumbnail(client.user.displayAvatarURL())
+        .setFooter({
+            text:"CSMP Bot"
+        })
+        .setTimestamp();
 
-            await axios.post(
-                `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
-                {},
-                {
-                    headers:{
-                        Authorization:
-                        `Bearer ${process.env.EXAROTON_TOKEN}`
-                    }
-                }
-            );
+        await interaction.followUp({
+            embeds:[sucesso]
+        });
 
-            await interaction.followUp(
-                "Servidor iniciando com sucesso. Boas Aventuras!!"
-            );
+    }catch(err){
 
-        }catch(err){
+    console.log(err.response?.data || err.message);
 
-            await interaction.followUp(
-                "Erro ao iniciar servidor. Contate os Administradores."
-            );
+    const erro = new EmbedBuilder()
+    .setTitle("❌ Erro")
+    .setDescription(
+        "Não foi possível iniciar o servidor."
+    )
 
-            console.log(err);
-        }
+    await interaction.followUp({
+        embeds:[erro]
+    });
 
-    }
-
-});
+}
 
 client.login(process.env.DISCORD_TOKEN);
