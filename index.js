@@ -73,16 +73,14 @@ client.on("interactionCreate", async interaction => {
 
         await interaction.reply({
             embeds:[carregando],
-            ephemeral:true
+            flags: 64
         });
 
         try{
 
             await axios.post(
-    `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/`,
-    {
-        action: "start"
-    },
+    `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start/`,
+    {},
     {
         headers: {
             Authorization: `Bearer ${process.env.EXAROTON_TOKEN}`
@@ -102,7 +100,7 @@ client.on("interactionCreate", async interaction => {
 
             await interaction.followUp({
                 embeds:[sucesso],
-                ephemeral:true
+                flags: 64
             });
 
         }catch(err){
@@ -119,7 +117,7 @@ client.on("interactionCreate", async interaction => {
 
             await interaction.followUp({
                 embeds:[erro],
-                ephemeral:true
+                flags: 64
             });
 
         }
