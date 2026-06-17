@@ -107,9 +107,7 @@ client.on("interactionCreate", async interaction => {
 
     const erro = new EmbedBuilder()
     .setTitle("❌ Erro")
-    .setDescription(
-        "Não foi possível iniciar o servidor."
-    )
+    .setDescription("Não foi possível iniciar o servidor.")
 
     await interaction.followUp({
         embeds:[erro]
