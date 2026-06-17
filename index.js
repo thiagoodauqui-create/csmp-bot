@@ -79,16 +79,16 @@ client.on("interactionCreate", async interaction => {
         try{
 
             await axios.post(
-                `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
-                {},
-                {
-                    headers:{
-                        Authorization:
-                        `Bearer ${process.env.EXAROTON_TOKEN}`
-                    }
-                }
-            );
-
+    `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/`,
+    {
+        action: "start"
+    },
+    {
+        headers: {
+            Authorization: `Bearer ${process.env.EXAROTON_TOKEN}`
+        }
+    }
+);
             const sucesso = new EmbedBuilder()
             .setTitle("✅ Servidor iniciado")
             .setDescription(
