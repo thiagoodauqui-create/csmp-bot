@@ -15,33 +15,35 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds]
 });
 
-new SlashCommandBuilder()
-    .setName("ligar")
-    .setDescription("Liga o servidor Minecraft")
-    .setDefaultMemberPermissions(8)
-]
-.map(command => command.toJSON());
+const commands = [
+    new SlashCommandBuilder()
+        .setName("ligar")
+        .setDescription("Liga o servidor Minecraft")
+        .setDefaultMemberPermissions(8)
+].map(command => command.toJSON());
 
-const rest = new REST({version:"10"})
+const rest = new REST({ version: "10" })
 .setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
     try {
 
+        // apaga comandos globais antigos
         await rest.put(
-    Routes.applicationCommands(
-        process.env.CLIENT_ID
-    ),
-    { body: [] }
-);
+            Routes.applicationCommands(
+                process.env.CLIENT_ID
+            ),
+            { body: [] }
+        );
 
-await rest.put(
-    Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-    ),
-    { body: commands }
-);
+        // cria comandos no servidor
+        await rest.put(
+            Routes.applicationGuildCommands(
+                process.env.CLIENT_ID,
+                process.env.GUILD_ID
+            ),
+            { body: commands }
+        );
 
         console.log("Comandos registrados");
 
@@ -60,59 +62,70 @@ client.on("interactionCreate", async interaction => {
 
     if(interaction.commandName==="ligar"){
 
-    const carregando = new EmbedBuilder()
-    .setTitle("⚡ CSMP")
-    .setDescription("Iniciando o servidor...")
-    .setThumbnail(client.user.displayAvatarURL())
-    .setFooter({
-        text:"CSMP Bot"
-    })
-    .setTimestamp();
-
-    await interaction.reply({
-        embeds:[carregando]
-    });
-
-    try{
-
-        await axios.post(
-            `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
-            {},
-            {
-                headers:{
-                    Authorization:
-                    `Bearer ${process.env.EXAROTON_TOKEN}`
-                }
-            }
-        );
-
-        const sucesso = new EmbedBuilder()
-        .setTitle("✅ Servidor iniciado")
-        .setDescription(
-            "O CSMP está ligando.\n\nEntre em alguns segundos."
-        )
+        const carregando = new EmbedBuilder()
+        .setTitle("⚡ CSMP")
+        .setDescription("Iniciando o servidor...")
         .setThumbnail(client.user.displayAvatarURL())
         .setFooter({
             text:"CSMP Bot"
         })
         .setTimestamp();
 
-        await interaction.followUp({
-            embeds:[sucesso]
+        await interaction.reply({
+            embeds:[carregando],
+            ephemeral:true
         });
 
-    }catch(err){
+        try{
 
-    console.log(err.response?.data || err.message);
+            await axios.post(
+                `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
+                {},
+                {
+                    headers:{
+                        Authorization:
+                        `Bearer ${process.env.EXAROTON_TOKEN}`
+                    }
+                }
+            );
 
-    const erro = new EmbedBuilder()
-    .setTitle("❌ Erro")
-    .setDescription("Não foi possível iniciar o servidor.")
+            const sucesso = new EmbedBuilder()
+            .setTitle("✅ Servidor iniciado")
+            .setDescription(
+                "O CSMP está ligando.\n\nEntre em alguns segundos."
+            )
+            .setThumbnail(client.user.displayAvatarURL())
+            .setFooter({
+                text:"CSMP Bot"
+            })
+            .setTimestamp();
 
-    await interaction.followUp({
-        embeds:[erro]
-    });
+            await interaction.followUp({
+                embeds:[sucesso],
+                ephemeral:true
+            });
 
-}
+        }catch(err){
+
+            console.log(
+                err.response?.data || err.message
+            );
+
+            const erro = new EmbedBuilder()
+            .setTitle("❌ Erro")
+            .setDescription(
+                "Não foi possível iniciar o servidor."
+            );
+
+            await interaction.followUp({
+                embeds:[erro],
+                ephemeral:true
+            });
+
+        }
+
+    }
+
+});
 
 client.login(process.env.DISCORD_TOKEN);
