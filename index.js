@@ -57,115 +57,103 @@ const rest = new REST({ version: "10" })
     }
 })();
 
-client.on("clientReady", () => {
-    console.log(`Bot online: ${client.user.tag}`);
-});
-
 client.on("interactionCreate", async interaction => {
 
     if(!interaction.isChatInputCommand()) return;
 
+    // /ligar
     if(interaction.commandName==="ligar"){
-
-        const carregando = new EmbedBuilder()
-        .setTitle("⚡ CSMP")
-        .setDescription("Iniciando o servidor...")
-        .setThumbnail(client.user.displayAvatarURL())
-        .setFooter({
-            text:"CSMP Bot"
-        })
-        .setTimestamp();
-
-       await interaction.reply({
-    embeds:[carregando]
-});
 
         try{
 
-console.log("SERVER_ID:", process.env.SERVER_ID);
-
-
-            await axios.post(
-    `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start/`,
-    {},
-    {
-        headers: {
-            Authorization: `Bearer ${process.env.EXAROTON_TOKEN}`
-        }
-    }
-);
-            c.setTitle("⏳ Solicitação enviada")
-.setDescription(
-"A ordem para ligar o servidor foi enviada.\nUse /status para acompanhar."
-)
+            const carregando = new EmbedBuilder()
+            .setTitle("⚡ CSMP")
+            .setDescription("Enviando solicitação para iniciar o servidor...")
             .setThumbnail(client.user.displayAvatarURL())
-            .setFooter({
-                text:"CSMP Bot"
-            })
             .setTimestamp();
 
             await interaction.reply({
-    embeds:[carregando]
-});
+                embeds:[carregando]
+            });
+
+            const resposta = await axios.post(
+                `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/start`,
+                {},
+                {
+                    headers:{
+                        Authorization:`Bearer ${process.env.EXAROTON_TOKEN}`
+                    }
+                }
+            );
+
+            console.log(resposta.data);
+
+            const sucesso = new EmbedBuilder()
+            .setTitle("✅ Solicitação enviada")
+            .setDescription(
+                "Use `/status` para acompanhar o servidor."
+            )
+            .setThumbnail(client.user.displayAvatarURL())
+            .setTimestamp();
+
+            await interaction.followUp({
+                embeds:[sucesso]
+            });
 
         }catch(err){
 
-            console.log(
-                err.response?.data || err.message
-            );
+            console.log(err.response?.data || err.message);
 
             const erro = new EmbedBuilder()
             .setTitle("❌ Erro")
-            .setDescription(
-                "Não foi possível iniciar o servidor."
-            );
+            .setDescription("Não foi possível iniciar o servidor.")
+            .setTimestamp();
 
-            await interaction.reply({
-    embeds:[carregando]
-});
-if(interaction.commandName==="status"){
+            await interaction.followUp({
+                embeds:[erro]
+            });
 
-    try{
-
-        const resposta = await axios.get(
-            `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}/`,
-            {
-                headers:{
-                    Authorization:
-                    `Bearer ${process.env.EXAROTON_TOKEN}`
-                }
-            }
-        );
-
-        const status = resposta.data.data.status;
-
-        const embed = new EmbedBuilder()
-        .setTitle("📊 Status do CSMP")
-        .setDescription(
-            `Estado atual: **${status}**`
-        )
-        .setThumbnail(
-            client.user.displayAvatarURL()
-        )
-        .setTimestamp();
-
-        await interaction.reply({
-            embeds:[embed]
-        });
-
-    }catch(err){
-
-        console.log(
-            err.response?.data || err.message
-        );
-
-        await interaction.reply({
-            content:"❌ Não foi possível verificar o servidor."
-        });
-
+        }
     }
 
-}
+    // /status
+    if(interaction.commandName==="status"){
+
+        try{
+
+            const resposta = await axios.get(
+                `https://api.exaroton.com/v1/servers/${process.env.SERVER_ID}`,
+                {
+                    headers:{
+                        Authorization:`Bearer ${process.env.EXAROTON_TOKEN}`
+                    }
+                }
+            );
+
+            console.log(resposta.data);
+
+            const estado = resposta.data.data.status;
+
+            const embed = new EmbedBuilder()
+            .setTitle("📊 Status do CSMP")
+            .setDescription(
+                `Servidor: **${estado}**`
+            )
+            .setThumbnail(client.user.displayAvatarURL())
+            .setTimestamp();
+
+            await interaction.reply({
+                embeds:[embed]
+            });
+
+        }catch(err){
+
+            console.log(err.response?.data || err.message);
+
+            await interaction.reply({
+                content:"❌ Erro ao consultar status."
+            });
+
         }
 
     }
