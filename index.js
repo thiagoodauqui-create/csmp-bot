@@ -22,12 +22,17 @@ const client = new Client({
 
 // Cole as URLs (raw.githubusercontent.com/.../assets/...) depois de subir os PNGs no GitHub.
 const MASCOTES = {
-  sucesso: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_1_confirmar.png,    // mascote_1_confirmar.png
-  erro: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_2_negar.png,       // mascote_2_negar.png
-  carregando: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_3_esperando.png, // mascote_3_esperando.png
-  info: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_4_escrevendo.png,        // mascote_4_escrevendo.png  (status, jogadores, anuncio)
-  aviso: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_5_aguardando.png,       // mascote_5_aguardando.png  (pedidos de confirmação)
-  economia: https://github.com/thiagoodauqui-create/csmp-bot/blob/main/assets/mascote_6_dinheiro.png     // mascote_6_dinheiro.png
+  sucesso: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_1_confirmar.png",
+
+  erro: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_2_negar.png",
+
+  carregando: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_3_esperando.png",
+
+  anuncio: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_4_escrevendo.png",
+
+  info: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_5_aguardando.png",
+
+  economia: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_6_dinheiro.png"
 };
 
 function baseEmbed(tipo, titulo, descricao, cor) {
