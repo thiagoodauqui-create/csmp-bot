@@ -32,6 +32,8 @@ const MASCOTES = {
 
   info: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_5_aguardando.png",
 
+aviso: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_5_aguardando.png",
+
   economia: "https://raw.githubusercontent.com/thiagoodauqui-create/csmp-bot/main/assets/mascote_6_dinheiro.png"
 };
 
@@ -489,7 +491,7 @@ client.on("interactionCreate", async interaction => {
   } catch(err){
 
     console.log(
-      err.response?.data||err.message
+      err.response?.data || err.message
     );
 
     await interaction.reply({
@@ -504,7 +506,9 @@ client.on("interactionCreate", async interaction => {
     });
 
   }
-}
+});
+
+// <-- ESTE estava faltando
 
 // ---------- Monitoramento mínimo: só detecta crash ----------
 // Sem painel, sem marcos automáticos, sem ranking semanal — só checa status
