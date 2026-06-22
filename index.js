@@ -40,12 +40,12 @@ function baseEmbed(tipo, titulo, descricao, cor) {
     .setTitle(titulo)
     .setDescription(descricao)
     .setColor(cor)
-    .setThumbnail(client.user.displayAvatarURL())
     .setTimestamp();
 
   const imagem = MASCOTES[tipo];
+
   if (imagem) {
-    embed.setImage(imagem);
+    embed.setThumbnail(imagem);
   }
 
   return embed;
@@ -442,25 +442,69 @@ client.on("interactionCreate", async interaction => {
 
   // /baltop
   if (interaction.commandName === "baltop") {
-    try {
-      const balances = await lerArquivoJSON(CAMINHO_BALANCES);
-      const lista = Object.entries(balances)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([nome, valor], i) => `**${i + 1}.** ${nome} — ${valor} moedas`)
-        .join("\n");
+  try {
 
-      await interaction.reply({
-        embeds: [baseEmbed("economia", "🏆 Baltop", lista || "Sem dados ainda.", 0x2ecc71)]
+    const balances = await lerArquivoJSON(
+      CAMINHO_BALANCES
+    );
+
+    const ranking = Object.entries(balances)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,10);
+
+    const campeao = ranking[0];
+
+    const lista = ranking
+      .map(
+        ([nome,valor],i)=>
+        `**${i+1}.** ${nome} — ${valor} moedas`
+      )
+      .join("\n");
+
+    const embed = baseEmbed(
+      "economia",
+      "🏆 Baltop",
+      lista,
+      0x2ecc71
+    );
+
+    if(campeao){
+
+      embed.setThumbnail(
+        `https://mc-heads.net/body/${campeao[0]}`
+      );
+
+      embed.addFields({
+        name:"👑 Mais rico",
+        value:campeao[0],
+        inline:true
       });
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-      await interaction.reply({
-        embeds: [baseEmbed("erro", "❌ Erro", "Não consegui ler o ranking.", 0xed4245)]
-      });
+
     }
+
+    await interaction.reply({
+      embeds:[embed]
+    });
+
+  } catch(err){
+
+    console.log(
+      err.response?.data||err.message
+    );
+
+    await interaction.reply({
+      embeds:[
+        baseEmbed(
+          "erro",
+          "❌ Erro",
+          "Não consegui ler ranking",
+          0xed4245
+        )
+      ]
+    });
+
   }
-});
+}
 
 // ---------- Monitoramento mínimo: só detecta crash ----------
 // Sem painel, sem marcos automáticos, sem ranking semanal — só checa status
