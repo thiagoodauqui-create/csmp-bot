@@ -506,6 +506,7 @@ client.on("interactionCreate", async interaction => {
     });
 
   }
+  }                    
 });
 
 // <-- ESTE estava faltando
