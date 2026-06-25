@@ -1,3 +1,16 @@
+const express = require("express");
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("CSMP Bot online");
+});
+
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor web iniciado na porta ${PORT}`);
+});
 require("dotenv").config();
 
 const {
@@ -569,6 +582,3 @@ client.once("ready", () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
-const http = require("http");
-const PORTA = process.env.PORT || 3000;
-http.createServer((req, res) => res.end("CSMP bot rodando")).listen(PORTA);
