@@ -569,3 +569,6 @@ client.once("ready", () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+const http = require("http");
+const PORTA = process.env.PORT || 3000;
+http.createServer((req, res) => res.end("CSMP bot rodando")).listen(PORTA);
